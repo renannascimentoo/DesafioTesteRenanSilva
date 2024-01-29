@@ -1,6 +1,4 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.util.*;
 
 import org.apache.poi.ss.formula.functions.T;
@@ -10,10 +8,12 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import javax.swing.*;
+
 public class Main {
 
-    public static void main(String[] args) throws Exception {
-
+    public static void main(String[] args) throws IOException {
+        try {
             // Carregar o arquivo Excel
             FileInputStream fis = new FileInputStream(new File("C:\\Users\\user\\Desktop\\DesafioTesteRenan\\src\\Cópia de Engenharia de Software - Desafio [RENAN DA SILVA].xlsx"));
             Workbook workbook = new XSSFWorkbook(fis);
@@ -22,60 +22,63 @@ public class Main {
             Sheet sheet = workbook.getSheetAt(0);
             //cria uma lista de students//
             List<students> students = new LinkedList<>();
-        // Itera sobre as linhas da planilha
-        for (Row row : sheet) {
-            double average = 0 ;
-            // Pular a linha de cabeçalho
-            if (row.getRowNum() < 3) {
-                continue;
+            // Itera sobre as linhas da planilha
+            for (Row row : sheet) {
+                double average = 0;
+                // Pular a linha de cabeçalho
+                if (row.getRowNum() < 3) {
+                    continue;
+                }
+                //atribuir valores//
+                int registration = (int) row.getCell(0).getNumericCellValue();
+                String name = row.getCell(1).getStringCellValue();
+                int fouls = (int) row.getCell(2).getNumericCellValue();
+                double p1 = row.getCell(3).getNumericCellValue();
+                double p2 = row.getCell(4).getNumericCellValue();
+                double p3 = row.getCell(5).getNumericCellValue();
+                average = (p1 + p2 + p3) / 3;
+                average = average / 10;
+                // Determinar a situação do aluno
+                double totalaulas = 60;
+                String situation = null;
+                double naf = 0;
+                if (fouls > 60 * 0.25) {
+                    situation = "Reprovado por Falta";
+                    naf = 0;
+                } else if (average < 5) {
+                    situation = "Reprovado por Nota";
+                    naf = 0;
+                } else if (average < 7) {
+                    situation = "Exame Final";
+                    naf = (naf + average) / 2;
+                } else if (average > 7) {
+                    situation = "Aprovado";
+                    naf = 0;
+                }
+                //adicionar na lista//
+                students.add(new students(registration, name, fouls, p1, p2, p3, average, situation, naf));
+                // Escrever o resultado na planilha
+                Cell situationCell = row.createCell(6);
+                situationCell.setCellValue(situation);
+
+                Cell nafCell = row.createCell(7);
+                nafCell.setCellValue(naf);
             }
-            //atribuir valores//
-            int registration = (int) row.getCell(0).getNumericCellValue();
-            String name = row.getCell(1).getStringCellValue();
-            int fouls = (int) row.getCell(2).getNumericCellValue();
-            double p1 = row.getCell(3).getNumericCellValue();
-            double p2 = row.getCell(4).getNumericCellValue();
-            double p3 = row.getCell(5).getNumericCellValue();
-            average = (p1 + p2 + p3) / 3;
-            average = average / 10;
-            // Determinar a situação do aluno
-            double totalaulas = 60;
-            String situation = null;
-            double naf = 0;
-            if (fouls > 60 * 0.25) {
-                situation = "Reprovado por Falta";
-                naf = 0;
-            } else if (average < 5) {
-                situation = "Reprovado por Nota";
-                naf = 0;
-            } else if (average < 7) {
-                situation = "Exame Final";
-                naf = (naf + average) / 2;
-            } else if(average>7){
-                situation = "Aprovado";
-                naf = 0;
+            // Salvar o arquivo Excel
+            FileOutputStream fos = new FileOutputStream(new File("C:\\Users\\user\\Desktop\\DesafioTesteRenan\\src\\Cópia de Engenharia de Software - Desafio [RENAN DA SILVA].xlsx"));
+            workbook.write(fos);
+            workbook.close();
+            fos.close();
+
+            //mostrar na tela//
+            for (students aluno : students) {
+                System.out.println(aluno);
             }
-            //adicionar na lista//
-            students.add(new students(registration,name,fouls,p1,p2,p3,average,situation,naf));
-            // Escrever o resultado na planilha
-            Cell situationCell = row.createCell(6);
-            situationCell.setCellValue(situation);
 
-            Cell nafCell = row.createCell(7);
-            nafCell.setCellValue(naf);
         }
-        // Salvar o arquivo Excel
-        FileOutputStream fos = new FileOutputStream(new File("C:\\Users\\user\\Desktop\\DesafioTesteRenan\\src\\Cópia de Engenharia de Software - Desafio [RENAN DA SILVA].xlsx"));
-        workbook.write(fos);
-        workbook.close();
-        fos.close();
-
-        //mostrar na tela//
-        for (students aluno: students) {
-            System.out.println(aluno);
+        catch (FileNotFoundException e){
+            JOptionPane.showMessageDialog(null,"arquivo nao encontrado"+ e.getMessage());
         }
-
-
     }
 }
 //classe students //
