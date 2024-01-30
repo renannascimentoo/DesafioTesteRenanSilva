@@ -18,3 +18,9 @@ Caso o número de faltas ultrapasse 25% do número total de aulas o aluno terá 
 Caso a situação do aluno seja diferente de "Exame Final", preencha o campo "Nota para Aprovação Final" com 0.
 
 Comandos para rodar a aplicação: não é necessário comandos pois a IDE IntelliJ já compila o código apertando Shift + F10. Link público da planilha: https://docs.google.com/spreadsheets/d/1TjBxiSI5fny4XFC-LrunAeD_OLQsErHQUOq8Lf9N3vQ/edit?usp=sharing .
+
+IMPORTANTE:para funcionar na parte
+FileInputStream fis = new FileInputStream(new File("C:arquivoaqui.xlsx")); (linha 18) e
+FileOutputStream fos = new FileOutputStream(new File("C:arquivoaqui.xlsx")); (linha 68)
+deve botar o diretório do arquivo 
+Exemplo: ("C:\\Users\\user\\Desktop\\DesafioTesteRenan\\src\\Cópia de Engenharia de Software - Desafio [RENAN DA SILVA].xlsx"));
